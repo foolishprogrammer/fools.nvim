@@ -6,16 +6,23 @@ return {
             'williamboman/mason-lspconfig.nvim',
             'WhoIsSethDaniel/mason-tool-installer.nvim',
             'nvim-telescope/telescope.nvim',
-            { 'j-hui/fidget.nvim', opts = {}},
+            'hrsh7th/cmp-nvim-lsp',
+            'SmiteshP/nvim-navic',
+            { 'j-hui/fidget.nvim', opts = {} },
         },
 
         config = function()
             -- local cmp = require('cmp')
             vim.api.nvim_create_autocmd('LspAttach', {
-                group = vim.api.nvim_create_augroup('lsp_attach',{clear=true}),
+                group = vim.api.nvim_create_augroup('lsp_attach', { clear = true }),
                 callback = function(event)
+                    local navic = require 'nvim-navic'
+                    local buffer = event.buf
+                    local client = vim.lsp.get_client_by_id(event.data.client_id)
+                    navic.attach(client, buffer)
+                    vim.o.statusline = "%{%v:lua.require'nvim-navic'.get_location()%}"
                     local map = function(keys, func, desc)
-                        vim.keymap.set('n', keys, func, {buffer = event.buf, desc = 'LSP: ' .. desc})
+                        vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
                     end
                 end,
             })
@@ -51,22 +58,26 @@ return {
                 end,
             })
             local capabilities = vim.lsp.protocol.make_client_capabilities()
-            -- capabilities = vim.tbl_deep_extend('force', capabiliities, require('cmp_nvim_lsp').default_capabilities())
+            capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+
+            table.unpack = table.unpack or unpack
 
             local servers = {
                 lua_ls = {
                     settings = {
                         Lua = {
-                            runtime = {version ='LuaJIT'},
+                            runtime = { version = 'LuaJIT' },
                             workspace = {
                                 checkThirdParty = false,
                                 library = {
-                                    '${3rd}/luv/library', unpack(vim.api.nvim_get_runtime_file('', true)),
+                                    '${3rd}/luv/library',
+                                    table.unpack(vim.api.nvim_get_runtime_file('', true)),
                                 },
                             },
                             completion = {
                                 callSnippet = 'Replace',
                             },
+                            diagnostics = { global = { 'vim' } },
                         },
                     },
                 },
@@ -77,9 +88,9 @@ return {
                 'stylua',
                 'emmet-language-server',
             })
-            require('mason-tool-installer').setup({ensure_installed = ensure_installed})
+            require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-            require('mason-lspconfig').setup{
+            require('mason-lspconfig').setup {
                 handlers = {
                     function(server_name)
                         local server = servers['server_name'] or {}
@@ -89,5 +100,89 @@ return {
                 },
             }
         end,
+    },
+    {
+        'L3MON4D3/LuaSnip',
+        dependecies = {
+            'saadparwaiz1/cmp_luasnip',
+            'rafamadriz/friendly-snippets',
+        },
+    },
+    {
+        'hrsh7th/nvim-cmp',
+        event = 'InsertEnter',
+        dependencies = {
+            {
+                'L3MON4D3/LuaSnip',
+                build = (function()
+                    if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
+                        return
+                    end
+                    return 'make install_jsregexp'
+                end)(),
+            },
+            'saadparwaiz1/cmp_luasnip',
+            'hrsh7th/cmp-nvim-lsp',
+            'hrsh7th/cmp-path',
+        },
+        config = function()
+            local cmp = require 'cmp'
+            require('luasnip.loaders.from_vscode').lazy_load()
+            local luasnip = require 'luasnip'
+            luasnip.config.setup {}
+            cmp.setup {
+                snippet = {
+                    expand = function(args)
+                        luasnip.lsp_expand(args.body)
+                    end,
+                },
+                completion = { completeopt = 'menu,menuone,noinsert' },
+                mapping = cmp.mapping.preset.insert {
+                    -- Select the [n]ext item
+                    ['<C-n>'] = cmp.mapping.select_next_item(),
+                    -- Select the [p]revious item
+                    ['<C-p>'] = cmp.mapping.select_prev_item(),
+
+                    ['<C-y>'] = cmp.mapping.confirm { select = true },
+
+                    ['<C-Space>'] = cmp.mapping.complete {},
+
+                    ['<C-l>'] = cmp.mapping(function()
+                        if luasnip.expand_or_locally_jumpable() then
+                            luasnip.expand_or_jump()
+                        end
+                    end, { 'i', 's' }),
+                    ['<C-h>'] = cmp.mapping(function()
+                        if luasnip.locally_jumpable(-1) then
+                            luasnip.jump(-1)
+                        end
+                    end, { 'i', 's' }),
+                },
+                sources = {
+                    { name = 'nvim_lsp' },
+                    { name = 'luasnip' },
+                    { name = 'path' },
+                },
+                window = {
+                    completion = cmp.config.window.bordered(),
+                    documentation = cmp.config.window.bordered(),
+                },
+            }
+        end,
+    },
+    {
+        'stevearc/conform.nvim',
+        opts = {
+            notify_on_error = false,
+            format_on_save = {
+                timeout_ms = 500,
+                lsp_fallback = true,
+            },
+            formatters_by_ft = {
+                lua = { 'stylua' },
+                python = { 'isort', 'black' },
+                javascript = { { 'prettierd', 'prettier' } },
+            },
+        },
     },
 }
