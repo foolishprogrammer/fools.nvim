@@ -24,6 +24,24 @@ return {
                     local map = function(keys, func, desc)
                         vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
                     end
+
+                    local builtin = require 'telescope.builtin'
+                    map('<leader>lsw', builtin.lsp_dynamic_workspace_symbols, 'Workspace Symbols')
+                    map('<leader>lsd', builtin.lsp_document_symbols, 'Document Symbols')
+                    map('<leader>ldd', builtin.lsp_type_definitions, 'Symbol Definitions')
+                    map('<leader>ldk', vim.lsp.buf.hover, 'Hover Documentations')
+                    local client = vim.lsp.get_client_by_id(event.data.client_id)
+                    if client and client.server_capabilities.documentHiglightProvider then
+                        vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+                            buffer = event.buf,
+                            callback = vim.lsp.buf.document_highlight,
+                        })
+
+                        vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
+                            buffer = event.buf,
+                            callback = vim.lsp.buf.clear_references,
+                        })
+                    end
                 end,
             })
             vim.api.nvim_create_autocmd({ 'FileType' }, {
