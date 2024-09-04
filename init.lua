@@ -1,11 +1,10 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
-require('options')
+require 'options'
 
-require('keymaps')
+require 'keymaps'
 
-require('lazy_bootstrap')
+require 'lazy_bootstrap'
 
-require('lazy_plugins')
-
+require 'lazy_plugins'

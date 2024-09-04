@@ -43,9 +43,10 @@ return {
             end, 'File Browser')
             map('<leader>fE', telescope.extensions.file_browser.file_browser, 'File Browser (root)')
             map('<leader>fs', builtin.find_files, 'File Search')
-            map('<leader>hs', builtin.help_tags, 'Help Search')
+            map('<leader>f.', builtin.oldfiles, 'Recent File')
             map('<leader>fg', builtin.live_grep, 'Grep Search')
-            map('<leader>fG', telescope.extensions.live_grep_args.live_grep_args, 'Grep Search')
+            map('<leader>hs', builtin.help_tags, 'Help Search')
+            map('<leader>fG', telescope.extensions.live_grep_args.live_grep_args, 'Grep Args Search')
             map('<leader>bd', builtin.diagnostics, 'Diagnostics Search')
             map('<leader>b/', function()
                 builtin.live_grep {
