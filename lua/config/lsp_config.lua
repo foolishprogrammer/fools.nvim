@@ -1,11 +1,12 @@
 return {
     {
         'neovim/nvim-lspconfig',
+        event = 'VimEnter',
         dependencies = {
             'williamboman/mason.nvim',
             'williamboman/mason-lspconfig.nvim',
             'WhoIsSethDaniel/mason-tool-installer.nvim',
-            'nvim-telescope/telescope.nvim',
+            -- 'nvim-telescope/telescope.nvim',
             'hrsh7th/cmp-nvim-lsp',
             'SmiteshP/nvim-navic',
             { 'j-hui/fidget.nvim', opts = {} },
