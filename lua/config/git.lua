@@ -1,27 +1,17 @@
--- Here is a more advanced example where we pass configuration
--- options to `gitsigns.nvim`. This is equivalent to the following lua:
---    require('gitsigns').setup({ ... })
---
--- See `:help gitsigns` to understand what the configuration keys do
 return {
-    { -- Adds git related signs to the gutter, as well as utilities for managing changes
+    {
         'lewis6991/gitsigns.nvim',
         opts = {
             signs = {
                 add = { text = '+' },
-                change = { text = '~' },
-                delete = { text = '_' },
-                topdelete = { text = '‾' },
-                changedelete = { text = '~' },
             },
-            on_attach = function()
-                local gitsigns = require 'gitsigns'
-                -- vim.keymap.set('n', '<leader>gb', ':Gitsigns blame_line<CR>', { desc = '[G]it [B]lame' })
-                vim.keymap.set('n', '<leader>gb', function()
-                    gitsigns.blame_line { full = true }
-                end, { desc = '[G]it [B]lame' })
-            end,
         },
+        on_attach = function()
+            local gitsigns = require 'gitsigns'
+            vim.keymap.set('n', '<leader>gb', function()
+                return gitsigns.blame_line { full = true }
+            end, { desc = 'GIT : Blame' })
+        end,
     },
     {
         'kdheepak/lazygit.nvim',
@@ -32,23 +22,41 @@ return {
             'LazyGitFilter',
             'LazyGitFilterCurrentFile',
         },
-        -- optional for floating window border decoration
         event = 'VimEnter',
-        dependencies = {
+        dependecies = {
             'nvim-telescope/telescope.nvim',
             'nvim-lua/plenary.nvim',
         },
         config = function()
+            local telescope_builtin = require 'telescope.builtin'
             require('telescope').load_extension 'lazygit'
-            vim.keymap.set('n', '<leader>gg', ':LazyGit<CR>', { desc = 'Lazy[G]it' })
-            vim.keymap.set('n', '<leader>gf', ':LazyGitFilterCurrentFile<CR>', { desc = '[G]it[F]ilter(buffer)' })
-            vim.keymap.set('n', '<leader>gF', ':LazyGitFilter<CR>', { desc = '[G]it[F]ilter(root)' })
-            vim.keymap.set('n', '<leader>gc', ':Telescope git_bcommits<CR>', { desc = '[G]it [C]ommits(buffer)' })
-            vim.keymap.set('n', '<leader>gC', ':Telescope git_commits<CR>', { desc = '[G]it [C]ommits(root)' })
-            vim.keymap.set('n', '<leader>gp', function()
-                require('telescope').extensions.lazygit.lazygit()
-            end, { desc = '[G]it [P]roject' })
+
+            local map = function(keys, func, desc)
+                vim.keymap.set('n', keys, func, { desc = 'GIT : ' .. desc })
+            end
+            map('<leader>gg', ':LazyGit<CR>', 'LazyGit')
+            map('<leader>gf', ':LazyGitFilterCurrentFile<CR>', 'Filter (Buf)')
+            map('<leader>gF', ':LazyGitFilter<CR>', 'Filter (Root)')
+            map('<leader>gc', telescope_builtin.git_bcommits, 'Commits (Buf)')
+            map('<leader>gC', telescope_builtin.git_commits, 'Commits (Root)')
+            map('<leader>ge', telescope_builtin.git_files, 'Explorer')
+            map('<leader>gs', telescope_builtin.git_status, 'Status')
+        end,
+    },
+    {
+        'sindrets/diffview.nvim',
+        dependencies = {
+            'paopaol/telescope-git-diffs.nvim',
+            'nvim-lua/plenary.nvim',
+        },
+        config = function()
+            local telescope = require 'telescope'
+            pcall(require('telescope').load_extension, 'git_diffs')
+            local map = function(keys, func, desc)
+                vim.keymap.set('n', keys, func, { desc = 'DIFF : ' .. desc })
+            end
+            map('<leader>gd', telescope.extensions.git_diffs.diff_commits, 'Commits Diff (Buf)')
+            map('<leader>gD', ':DiffviewFileHistory<CR>', 'Commits Diff (Root)')
         end,
     },
 }
--- vim: ts=2 sts=2 sw=2 et

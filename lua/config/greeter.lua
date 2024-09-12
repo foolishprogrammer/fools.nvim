@@ -35,14 +35,15 @@ return {
             [[ ⣿⣿⢃⠆⣿⢽⣯⣉⣿⣛⡃⠰⠊⠷⠶⣶⣶⣿⣿⡆⠐⠿⡤⠟⢠⢸⣿⣿⣿⣿⣿⣿⣿⠃⠼⣿⡆⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ ]],
             [[ ⣿⠃⠒⠐⠷⠶⠶⠶⣿⣿⣷⠀⠬⢽⣿⣿⣿⣿⣿⣿⢸⣶⢐⠨⣿⢸⣿⣿⣿⣿⣿⣿⡟⠈⣴⣿⡇⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ ]],
             [[ ⡟⠐⡒⢐⣒⣒⣒⠚⣛⣿⡏⠀⠠⣭⣭⣭⣿⣿⣿⣿⢸⣿⢐⢨⣿⢸⣿⣿⣿⣿⣿⣿⡇⢾⣿⣿⣷⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ ]],
+            [[]],
+            [[                     Start with <leader>                    ]],
+            [[                  hint : [SPACE] = <leader>                 ]],
         }
         dashboard.section.buttons.val = {
             dashboard.button('leader f e', ' > File Explorer', ':Telescope file_browser<CR>'),
-            dashboard.button('leader s f', ' > Find File', ':Telescope find_files<CR>'),
-            dashboard.button('leader s .', ' > Recent File', ':Telescope oldfiles<CR>'),
+            dashboard.button('leader f s', ' > File Search', ':Telescope find_files<CR>'),
+            dashboard.button('leader f .', ' > Recent File', ':Telescope oldfiles<CR>'),
             dashboard.button('leader g e', '󰊢 > Git Explorer', ':Telescope git_files<CR>'),
-            dashboard.button('leader u c', ' > UI Colorscheme', ':Telescope colorscheme<CR>'),
-            dashboard.button('leader u t', '󱡔 > UI Transparency', ':TransparentToggle<CR>'),
         }
         return dashboard.config
     end,

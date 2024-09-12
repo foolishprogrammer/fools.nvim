@@ -1,0 +1,5 @@
+.env
+
+Pipfile
+Pipfile.lock
+lazy-lock.json

@@ -1,51 +1,38 @@
--- TODO : Comment Test
 return {
-    { -- LSP Configuration & Plugins
+    {
         'neovim/nvim-lspconfig',
+        event = 'VimEnter',
         dependencies = {
-            -- Automatically install LSPs and related tools to stdpath for neovim
             'williamboman/mason.nvim',
             'williamboman/mason-lspconfig.nvim',
             'WhoIsSethDaniel/mason-tool-installer.nvim',
-
-            -- Useful status updates for LSP.
-            -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
+            -- 'nvim-telescope/telescope.nvim',
+            'hrsh7th/cmp-nvim-lsp',
+            'SmiteshP/nvim-navic',
             { 'j-hui/fidget.nvim', opts = {} },
         },
+
         config = function()
+            -- local cmp = require('cmp')
             vim.api.nvim_create_autocmd('LspAttach', {
-                group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
+                group = vim.api.nvim_create_augroup('lsp_attach', { clear = true }),
                 callback = function(event)
+                    local navic = require 'nvim-navic'
+                    local buffer = event.buf
+                    local client = vim.lsp.get_client_by_id(event.data.client_id)
+                    navic.attach(client, buffer)
+                    vim.o.statusline = "%{%v:lua.require'nvim-navic'.get_location()%}"
                     local map = function(keys, func, desc)
                         vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
                     end
 
-                    map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-
-                    map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-
-                    map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-
-                    map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-
-                    map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-
-                    map(
-                        '<leader>ws',
-                        require('telescope.builtin').lsp_dynamic_workspace_symbols,
-                        '[W]orkspace [S]ymbols'
-                    )
-
-                    map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-
-                    map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
-
-                    map('K', vim.lsp.buf.hover, 'Hover Documentation')
-
-                    map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-
+                    local builtin = require 'telescope.builtin'
+                    map('<leader>lsw', builtin.lsp_dynamic_workspace_symbols, 'Workspace Symbols')
+                    map('<leader>lsd', builtin.lsp_document_symbols, 'Document Symbols')
+                    map('<leader>ldd', builtin.lsp_type_definitions, 'Symbol Definitions')
+                    map('<leader>ldk', vim.lsp.buf.hover, 'Hover Documentations')
                     local client = vim.lsp.get_client_by_id(event.data.client_id)
-                    if client and client.server_capabilities.documentHighlightProvider then
+                    if client and client.server_capabilities.documentHiglightProvider then
                         vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
                             buffer = event.buf,
                             callback = vim.lsp.buf.document_highlight,
@@ -89,16 +76,12 @@ return {
                     }
                 end,
             })
-
             local capabilities = vim.lsp.protocol.make_client_capabilities()
             capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-            local servers = {
-                clangd = {},
-                gopls = {},
-                pyright = {},
-                rust_analyzer = {},
+            table.unpack = table.unpack or unpack
 
+            local servers = {
                 lua_ls = {
                     settings = {
                         Lua = {
@@ -107,29 +90,29 @@ return {
                                 checkThirdParty = false,
                                 library = {
                                     '${3rd}/luv/library',
-                                    unpack(vim.api.nvim_get_runtime_file('', true)),
+                                    table.unpack(vim.api.nvim_get_runtime_file('', true)),
                                 },
                             },
                             completion = {
                                 callSnippet = 'Replace',
                             },
+                            diagnostics = { global = { 'vim' } },
                         },
                     },
                 },
             }
-
             require('mason').setup()
-
             local ensure_installed = vim.tbl_keys(servers or {})
             vim.list_extend(ensure_installed, {
-                'stylua', -- Used to format lua code
+                'stylua',
+                'emmet-language-server',
             })
             require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
             require('mason-lspconfig').setup {
                 handlers = {
                     function(server_name)
-                        local server = servers[server_name] or {}
+                        local server = servers['server_name'] or {}
                         server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
                         require('lspconfig')[server_name].setup(server)
                     end,
@@ -139,12 +122,12 @@ return {
     },
     {
         'L3MON4D3/LuaSnip',
-        dependencies = {
+        dependecies = {
             'saadparwaiz1/cmp_luasnip',
             'rafamadriz/friendly-snippets',
         },
     },
-    { -- Autocompletion
+    {
         'hrsh7th/nvim-cmp',
         event = 'InsertEnter',
         dependencies = {
@@ -158,20 +141,14 @@ return {
                 end)(),
             },
             'saadparwaiz1/cmp_luasnip',
-
             'hrsh7th/cmp-nvim-lsp',
             'hrsh7th/cmp-path',
-
-            --    set up the ones that are useful for you.
-            -- 'rafamadriz/friendly-snippets',
         },
         config = function()
-            -- See `:help cmp`
             local cmp = require 'cmp'
             require('luasnip.loaders.from_vscode').lazy_load()
             local luasnip = require 'luasnip'
             luasnip.config.setup {}
-
             cmp.setup {
                 snippet = {
                     expand = function(args)
@@ -212,7 +189,7 @@ return {
             }
         end,
     },
-    { -- Autoformat
+    {
         'stevearc/conform.nvim',
         opts = {
             notify_on_error = false,
@@ -223,121 +200,8 @@ return {
             formatters_by_ft = {
                 lua = { 'stylua' },
                 python = { 'isort', 'black' },
-                --
                 javascript = { { 'prettierd', 'prettier' } },
             },
         },
     },
-    { -- NOTE: Yes, you can install new plugins here!
-        'mfussenegger/nvim-dap',
-        -- NOTE: And you can specify dependencies as well
-        dependencies = {
-            -- Creates a beautiful debugger UI
-            'rcarriga/nvim-dap-ui',
-            'nvim-neotest/nvim-nio',
-
-            -- Installs the debug adapters for you
-            'williamboman/mason.nvim',
-            'jay-babu/mason-nvim-dap.nvim',
-
-            -- Add your own debuggers here
-            'leoluz/nvim-dap-go',
-        },
-        config = function()
-            local dap = require 'dap'
-            local dapui = require 'dapui'
-
-            require('mason-nvim-dap').setup {
-                -- Makes a best effort to setup the various debuggers with
-                -- reasonable debug configurations
-                automatic_setup = true,
-
-                -- You can provide additional configuration to the handlers,
-                -- see mason-nvim-dap README for more information
-                handlers = {},
-
-                -- You'll need to check that you have the required things installed
-                -- online, please don't ask me how to install them :)
-                ensure_installed = {
-                    -- Update this to ensure that you have the debuggers for the langs you want
-                    'delve',
-                },
-            }
-
-            -- Basic debugging keymaps, feel free to change to your liking!
-            vim.keymap.set('n', '<F5>', dap.continue, { desc = 'Debug: Start/Continue' })
-            vim.keymap.set('n', '<F1>', dap.step_into, { desc = 'Debug: Step Into' })
-            vim.keymap.set('n', '<F2>', dap.step_over, { desc = 'Debug: Step Over' })
-            vim.keymap.set('n', '<F3>', dap.step_out, { desc = 'Debug: Step Out' })
-            vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint, { desc = 'Debug: Toggle Breakpoint' })
-            vim.keymap.set('n', '<leader>B', function()
-                dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
-            end, { desc = 'Debug: Set Breakpoint' })
-
-            -- Dap UI setup
-            -- For more information, see |:help nvim-dap-ui|
-            dapui.setup {
-                -- Set icons to characters that are more likely to work in every terminal.
-                --    Feel free to remove or use ones that you like more! :)
-                --    Don't feel like these are good choices.
-                icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
-                controls = {
-                    icons = {
-                        pause = '⏸',
-                        play = '▶',
-                        step_into = '⏎',
-                        step_over = '⏭',
-                        step_out = '⏮',
-                        step_back = 'b',
-                        run_last = '▶▶',
-                        terminate = '⏹',
-                        disconnect = '⏏',
-                    },
-                },
-            }
-
-            -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-            vim.keymap.set('n', '<F7>', dapui.toggle, { desc = 'Debug: See last session result.' })
-
-            dap.listeners.after.event_initialized['dapui_config'] = dapui.open
-            dap.listeners.before.event_terminated['dapui_config'] = dapui.close
-            dap.listeners.before.event_exited['dapui_config'] = dapui.close
-
-            -- Install golang specific config
-            require('dap-go').setup()
-        end,
-    },
-    { -- Add indentation guides even on blank lines
-        'lukas-reineke/indent-blankline.nvim',
-        -- Enable `lukas-reineke/indent-blankline.nvim`
-        -- See `:help ibl`
-        main = 'ibl',
-        opts = {},
-    },
-    -- {
-    --     'SmiteshP/nvim-navic',
-    --     dependencies = { 'neovim/nvim-lspconfig' },
-    --     opts = function()
-    --         return {
-    --             separator = ' ',
-    --             highlight = true,
-    --             depth_limit = 5,
-    --             lazy_update_context = true,
-    --             auto_attach = true,
-    --         }
-    --     end,
-    -- },
-    {
-        'utilyre/barbecue.nvim',
-        name = 'barbecue',
-        version = '*',
-        dependencies = {
-            'SmiteshP/nvim-navic',
-            'nvim-tree/nvim-web-devicons', -- optional dependency
-        },
-        opts = {
-            -- configurations go here
-        },
-    },
 }
--- vim: ts=2 sts=2 sw=2 et
