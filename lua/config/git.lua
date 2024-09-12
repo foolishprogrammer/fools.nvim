@@ -43,4 +43,20 @@ return {
             map('<leader>gs', telescope_builtin.git_status, 'Status')
         end,
     },
+    {
+        'sindrets/diffview.nvim',
+        dependencies = {
+            'paopaol/telescope-git-diffs.nvim',
+            'nvim-lua/plenary.nvim',
+        },
+        config = function()
+            local telescope = require 'telescope'
+            pcall(require('telescope').load_extension, 'git_diffs')
+            local map = function(keys, func, desc)
+                vim.keymap.set('n', keys, func, { desc = 'DIFF : ' .. desc })
+            end
+            map('<leader>gd', telescope.extensions.git_diffs.diff_commits, 'Commits Diff (Buf)')
+            map('<leader>gD', ':DiffviewFileHistory<CR>', 'Commits Diff (Root)')
+        end,
+    },
 }
