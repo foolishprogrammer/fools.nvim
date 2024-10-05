@@ -11,6 +11,9 @@ return {
             end
             local pairs = require 'mini.pairs'
             pairs.setup()
+
+            local surround = require 'mini.surround'
+            surround.setup()
         end,
     },
 }
