@@ -14,6 +14,9 @@ In this config, I will keep track on changes and planned changes on this config.
 
 ## Installation
 
+NOTE : `main` branch is my current config. Later, this branch will replaced by `dev`.
+If you want to make your own configuration, you can try `base` branch for the basic functionality.
+
 Installation pretty similar with['kickstart.nvim'](https://github.com/nvim-lua/kickstart.nvim).
 Please take a look over there for more further detail.
 
