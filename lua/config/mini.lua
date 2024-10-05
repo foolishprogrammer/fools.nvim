@@ -9,6 +9,8 @@ return {
             statusline.section_filename = function()
                 return require('nvim-navic').get_location()
             end
+            local pairs = require 'mini.pairs'
+            pairs.setup()
         end,
     },
 }
