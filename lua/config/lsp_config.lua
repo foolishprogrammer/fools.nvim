@@ -21,7 +21,6 @@ return {
                     local buffer = event.buf
                     local client = vim.lsp.get_client_by_id(event.data.client_id)
                     navic.attach(client, buffer)
-                    vim.o.statusline = "%{%v:lua.require'nvim-navic'.get_location()%}"
                     local map = function(keys, func, desc)
                         vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
                     end

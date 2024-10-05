@@ -145,21 +145,14 @@ return {
 
 </details>
 
+## TODO
 
+This is the list of what needs to be done. I will update what I planned in the future and what I is already done in this section.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- [x] Add [neovim/nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) and [nvim-telescope/telescope.nvim](https://github.com/nvim-telescope/telescope.nvim).
+- [ ] Add  snippet helper [benfowler/telescope-luasnip.nvim](https://github.com/benfowler/telescope-luasnip.nvim).
+- [x] Add debugger with [mfussenegger/nvim-dap](https://github.com/mfussenegger/nvim-dap) and [rcarriga/nvim-dap-ui](https://github.com/rcarriga/nvim-dap-ui).
+- [x] Add [folke/which-key.nvim](https://github.com/folke/which-key.nvim) for keybinding preview.
+- [x] Add greeter page with [goolord/alpha-nvim](https://github.com/goolord/alpha-nvim).
+- [x] Add git integration. I use [lewis6991/gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim), [kdheepak/lazygit.nvim](https://github.com/kdheepak/lazygit.nvim), and [sindrets/diffview.nvim](https://github.com/sindrets/diffview.nvim)
+- [X] Use [echasnovski/mini.nvim](https://github.com/echasnovski/mini.nvim) for statusline and pairs autocomplete..
