@@ -37,6 +37,7 @@ return {
             map('<leader>gg', ':LazyGit<CR>', 'LazyGit')
             map('<leader>gf', ':LazyGitFilterCurrentFile<CR>', 'Filter (Buf)')
             map('<leader>gF', ':LazyGitFilter<CR>', 'Filter (Root)')
+            map('<leader>gb', ':Gitsigns blame_line<CR>', 'Filter (Root)')
             map('<leader>gc', telescope_builtin.git_bcommits, 'Commits (Buf)')
             map('<leader>gC', telescope_builtin.git_commits, 'Commits (Root)')
             map('<leader>ge', telescope_builtin.git_files, 'Explorer')
