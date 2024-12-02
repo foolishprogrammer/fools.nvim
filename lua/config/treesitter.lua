@@ -15,6 +15,7 @@ return {
                     'vimdoc',
                     'regex',
                     'markdown_inline',
+                    'javascript',
                 },
                 auto_install = true,
                 highlight = { enable = true },
