@@ -8,25 +8,30 @@ return {
             'williamboman/mason.nvim',
             'jay-babu/mason-nvim-dap.nvim',
         },
+        keys = function(_, keys)
+            local dap = require 'dap'
+            local dapui = require 'dapui'
+            return {
+                { '<F5>', dap.continue, desc = 'Start/Continue' },
+                { '<F1>', dap.step_into, desc = 'Step Into' },
+                { '<F2>', dap.step_over, desc = 'Step Over' },
+                { '<F3>', dap.step_out, desc = 'Step Out' },
+                { '<leader>db', dap.toggle_breakpoint, desc = 'Toggle Breakpoint' },
+                { '<F7>', dapui.toggle, desc = 'Last Session Result' },
+                unpack(keys),
+            }
+        end,
         config = function()
             local dap = require 'dap'
             local dapui = require 'dapui'
+            require('mason').setup()
             require('mason-nvim-dap').setup {
-                automatic_setup = true,
+                automatic_installation = true,
                 handlers = {},
                 ensure_installed = {
                     'delve',
                 },
             }
-            local map = function(keys, func, desc)
-                vim.keymap.set('n', keys, func, { desc = 'DAP : ' .. desc })
-            end
-            map('<F5>', dap.continue, 'Start/Continue')
-            map('<F1>', dap.step_into, 'Step Into')
-            map('<F2>', dap.step_over, 'Step Over')
-            map('<F3>', dap.step_out, 'Step Out')
-            map('<leader>db', dap.toggle_breakpoint, 'Toggle Breakpoint')
-
             dapui.setup {
                 icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
                 controls = {
@@ -43,7 +48,6 @@ return {
                     },
                 },
             }
-            map('<F7>', dapui.toggle, 'Last Session Result')
 
             dap.listeners.after.event_initialized['dapui_config'] = dapui.open
             dap.listeners.before.event_terminated['dapui_config'] = dapui.close
