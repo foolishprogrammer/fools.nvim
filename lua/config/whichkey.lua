@@ -14,6 +14,7 @@ return {
                 { '<leader>c', group = 'Code' },
                 { '<leader>d', group = 'Debug' },
                 { '<leader>n', group = 'Notify' },
+                { '<leader>m', group = 'Mark' },
                 { '<leader>cs', group = 'Code : Snippet' },
                 { '<leader>ld', group = 'LSP : Documentation' },
                 { '<leader>ls', group = 'LSP : Symbols' },
