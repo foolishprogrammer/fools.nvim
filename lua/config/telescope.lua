@@ -69,7 +69,7 @@ return {
                 'n',
                 '<leader>csp',
                 ':Telescope luasnip theme=dropdown<CR>',
-                { desc = '[C]ode [S]nippet [P]review' }
+                { desc = 'Code : Snippet Preview' }
             )
         end,
     },
