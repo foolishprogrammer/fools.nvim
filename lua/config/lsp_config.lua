@@ -30,6 +30,8 @@ return {
                     map('<leader>lsd', builtin.lsp_document_symbols, 'Document Symbols')
                     map('<leader>ldd', builtin.lsp_type_definitions, 'Symbol Definitions')
                     map('<leader>ldk', vim.lsp.buf.hover, 'Hover Documentations')
+                    map('<leader>lgd', vim.lsp.buf.definition, 'Find Definition')
+                    map('<leader>lgD', vim.lsp.buf.declaration, 'Find Declaration')
                     local client = vim.lsp.get_client_by_id(event.data.client_id)
                     if client and client.server_capabilities.documentHiglightProvider then
                         vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
