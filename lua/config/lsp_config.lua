@@ -19,15 +19,19 @@ return {
                 callback = function(event)
                     local navic = require 'nvim-navic'
                     local buffer = event.buf
+                    local builtin = require 'telescope.builtin'
+                    -- local telescope_patch = require '_patches.telescope'
+                    -- builtin.lsp_dynamic_workspace_symbols = telescope_patch
                     local client = vim.lsp.get_client_by_id(event.data.client_id)
-                    navic.attach(client, buffer)
                     local map = function(keys, func, desc)
                         vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
                     end
+                    if client.server_capabilities.documentSymbolProvider then
+                        navic.attach(client, buffer)
+                        map('<leader>lsw', builtin.lsp_dynamic_workspace_symbols, 'Workspace Symbols')
+                        map('<leader>lsd', builtin.lsp_document_symbols, 'Document Symbols')
+                    end
 
-                    local builtin = require 'telescope.builtin'
-                    map('<leader>lsw', builtin.lsp_dynamic_workspace_symbols, 'Workspace Symbols')
-                    map('<leader>lsd', builtin.lsp_document_symbols, 'Document Symbols')
                     map('<leader>ldd', builtin.lsp_type_definitions, 'Symbol Definitions')
                     map('<leader>ldk', vim.lsp.buf.hover, 'Hover Documentations')
                     local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -109,6 +113,7 @@ return {
             require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
             require('mason-lspconfig').setup {
+                ensure_installed = {},
                 handlers = {
                     function(server_name)
                         local server = servers['server_name'] or {}
@@ -156,9 +161,9 @@ return {
                 },
                 completion = { completeopt = 'menu,menuone,noinsert' },
                 mapping = cmp.mapping.preset.insert {
-                    -- Select the [n]ext item
+                    -- Select the next item
                     ['<C-n>'] = cmp.mapping.select_next_item(),
-                    -- Select the [p]revious item
+                    -- Select the previous item
                     ['<C-p>'] = cmp.mapping.select_prev_item(),
 
                     ['<C-y>'] = cmp.mapping.confirm { select = true },
