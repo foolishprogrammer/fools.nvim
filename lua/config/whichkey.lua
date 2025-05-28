@@ -18,6 +18,7 @@ return {
                 { '<leader>cs', group = 'Code : Snippet' },
                 { '<leader>ld', group = 'LSP : Documentation' },
                 { '<leader>ls', group = 'LSP : Symbols' },
+                { '<leader>lg', group = 'LSP : Go To' },
             }
         end,
     },
