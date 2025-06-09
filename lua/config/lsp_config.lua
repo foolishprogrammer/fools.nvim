@@ -86,6 +86,13 @@ return {
 
             table.unpack = table.unpack or unpack
 
+            vim.filetype.add {
+                extension = {
+                    jinja = 'jinja',
+                    jinja2 = 'jinja',
+                },
+            }
+
             local servers = {
                 lua_ls = {
                     settings = {
@@ -105,12 +112,16 @@ return {
                         },
                     },
                 },
+                jinja_lsp = {
+                    filetypes = { 'jinja', 'python', 'html' },
+                },
             }
             require('mason').setup()
             local ensure_installed = vim.tbl_keys(servers or {})
             vim.list_extend(ensure_installed, {
                 'stylua',
                 'emmet-language-server',
+                'jinja_lsp',
             })
             require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
