@@ -19,6 +19,7 @@ return {
                 { '<leader>ld', group = 'LSP : Documentation' },
                 { '<leader>ls', group = 'LSP : Symbols' },
                 { '<leader>lg', group = 'LSP : Go To' },
+                { '<leader>w', group = 'Wiki' },
             }
         end,
     },

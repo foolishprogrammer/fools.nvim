@@ -6,9 +6,12 @@ return {
         config = function()
             local statusline = require 'mini.statusline'
             statusline.setup()
-            statusline.section_filename = function()
+            statusline.section_fileinfo = function(args)
                 return require('nvim-navic').get_location()
             end
+            -- statusline.section_filename = function()
+            --     return require('nvim-navic').get_location()
+            -- end
             local pairs = require 'mini.pairs'
             pairs.setup()
 
